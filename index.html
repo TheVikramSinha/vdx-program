@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Program reporting: inbound and outbound</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#F6F7F9; --panel:#FFFFFF; --ink:#1B2430; --muted:#5E6B7A; --line:#DCE1E8;
+  --accent:#23527C; --accent-ink:#FFFFFF;
+  --g:#2A8352; --a:#B7791F; --r:#C0392B;
+  --gbg:#E3F2E9; --abg:#FBF0D9; --rbg:#F9E1DE;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#12171E; --panel:#1A212B; --ink:#E7ECF2; --muted:#9AA7B6; --line:#2B3541;
+    --accent:#6FA8DC; --accent-ink:#0E1319;
+    --g:#5CC38A; --a:#E6B450; --r:#F0786B;
+    --gbg:#1B3327; --abg:#3A2F17; --rbg:#3E1F1C;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#12171E; --panel:#1A212B; --ink:#E7ECF2; --muted:#9AA7B6; --line:#2B3541;
+  --accent:#6FA8DC; --accent-ink:#0E1319;
+  --g:#5CC38A; --a:#E6B450; --r:#F0786B;
+  --gbg:#1B3327; --abg:#3A2F17; --rbg:#3E1F1C;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 "Public Sans",system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+.wrap{max-width:1040px;margin:0 auto;padding:28px 18px 56px}
+h1{font-size:26px;line-height:1.2;margin:0 0 4px;font-weight:700;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0 0 22px;max-width:62ch}
+.tabs{display:flex;gap:0;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel);margin-bottom:26px}
+.tabs button{flex:1;padding:14px 16px;border:0;background:transparent;color:var(--muted);font:600 15px "Public Sans",system-ui,sans-serif;cursor:pointer;text-align:left}
+.tabs button small{display:block;font-weight:400;font-size:13px;margin-top:2px}
+.tabs button+button{border-left:1px solid var(--line)}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink)}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs button[aria-selected="true"]:focus-visible{outline-color:var(--ink)}
+h2{font-size:18px;margin:34px 0 10px;font-weight:700}
+h2:first-child{margin-top:0}
+.note{color:var(--muted);font-size:13.5px;margin:-4px 0 12px}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:560px}
+th,td{padding:10px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);font-size:14px}
+th{font-weight:600;color:var(--muted);background:var(--bg);white-space:nowrap}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:99px;font-weight:600;font-size:12.5px;white-space:nowrap}
+.chip::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.chip.G{color:var(--g);background:var(--gbg)}
+.chip.A{color:var(--a);background:var(--abg)}
+.chip.R{color:var(--r);background:var(--rbg)}
+.bar{height:8px;background:var(--line);border-radius:4px;min-width:90px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center}
+.tools button{border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:6px 12px;border-radius:6px;font:500 13.5px "Public Sans",system-ui,sans-serif;cursor:pointer}
+.tools button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tools .sp{flex:1}
+.head{background:var(--panel);border:1px solid var(--line);border-left-width:8px;border-radius:8px;padding:18px 20px;margin-bottom:16px}
+.head.A{border-left-color:var(--a)} .head.R{border-left-color:var(--r)} .head.G{border-left-color:var(--g)}
+.head h3{margin:8px 0 4px;font-size:20px;line-height:1.3}
+.head p{margin:0;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:6px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.kpi b{display:block;font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi span{color:var(--muted);font-size:13.5px}
+.road{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;overflow-x:auto}
+.rg{display:grid;grid-template-columns:190px repeat(12,minmax(40px,1fr));min-width:700px;align-items:center;row-gap:8px;position:relative}
+.rg .m{font-size:12px;color:var(--muted);text-align:center;padding-bottom:4px;border-bottom:1px solid var(--line)}
+.rg .nm{font-size:13.5px;font-weight:500;padding-right:8px}
+.rg .tr{height:20px;border-radius:4px;position:relative;overflow:hidden;opacity:.95}
+.rg .tr.G{background:var(--gbg);outline:1px solid var(--g)}
+.rg .tr.A{background:var(--abg);outline:1px solid var(--a)}
+.rg .tr.R{background:var(--rbg);outline:1px solid var(--r)}
+.rg .tr i{position:absolute;inset:0 auto 0 0;opacity:.75}
+.rg .tr.G i{background:var(--g)} .rg .tr.A i{background:var(--a)} .rg .tr.R i{background:var(--r)}
+.now{grid-row:1/-1;border-left:2px dashed var(--ink);pointer-events:none;opacity:.6}
+.cols{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:820px){.cols{grid-template-columns:1fr 1fr}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 16px}
+.card ol{margin:0;padding:0;list-style:none}
+.card li{padding:12px 0;border-bottom:1px solid var(--line)}
+.card li:last-child{border-bottom:0}
+.card li strong{display:block}
+.card li span{color:var(--muted);font-size:13.5px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Program reporting</h1>
+  <p class="sub">What comes in from project teams. What goes out to senior management. No financial data.</p>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" id="t-in" aria-selected="true" aria-controls="p-in">Reports I review<small>From project leads and teams</small></button>
+    <button role="tab" id="t-out" aria-selected="false" aria-controls="p-out">Reports I provide<small>To senior management</small></button>
+  </div>
+
+  <section id="p-in" role="tabpanel" aria-labelledby="t-in">
+    <h2>Report list</h2>
+    <div class="scroll"><table id="cat-in"></table></div>
+
+    <h2>Sample: program intake board</h2>
+    <p class="note">One view built from the weekly project status reports. Filter by status. Sort by schedule slip.</p>
+    <div class="tools" id="filters"></div>
+    <div class="scroll"><table id="board"></table></div>
+
+    <h2>Sample: open risks and blockers</h2>
+    <div class="scroll"><table id="risks"></table></div>
+  </section>
+
+  <section id="p-out" role="tabpanel" aria-labelledby="t-out" hidden>
+    <h2>Report list</h2>
+    <div class="scroll"><table id="cat-out"></table></div>
+
+    <h2>Sample: executive status, week of 5 Oct 2026</h2>
+    <div id="head"></div>
+    <div class="kpis" id="kpis"></div>
+
+    <h2>Roadmap</h2>
+    <div class="road"><div class="rg" id="road"></div></div>
+
+    <div class="cols">
+      <div>
+        <h2>Top risks</h2>
+        <div class="card"><ol id="toprisks"></ol></div>
+      </div>
+      <div>
+        <h2>Decisions needed</h2>
+        <div class="card"><ol id="decisions"></ol></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+const P=[
+ {n:"Telematics Data Exchange",lead:"M. Rao",rag:"G",pct:72,slip:0,risks:1,s:0,e:7},
+ {n:"Claims Intake Modernization",lead:"J. Alvarez",rag:"A",pct:48,slip:12,risks:3,s:0,e:9},
+ {n:"Agency Mgmt System Upgrade",lead:"T. Nguyen",rag:"A",pct:61,slip:8,risks:2,s:0,e:6},
+ {n:"Driver Scoring API",lead:"S. Okafor",rag:"G",pct:85,slip:0,risks:0,s:0,e:3},
+ {n:"Policy Admin Migration",lead:"R. Patel",rag:"R",pct:33,slip:30,risks:4,s:1,e:11},
+ {n:"Partner Onboarding Portal",lead:"L. Chen",rag:"G",pct:55,slip:2,risks:1,s:2,e:8}
+];
+const RISKS=[
+ {p:"Policy Admin Migration",t:"Legacy data mapping incomplete",sev:"High",o:"R. Patel",age:21,m:"Add two data analysts; freeze scope"},
+ {p:"Policy Admin Migration",t:"Vendor test environment late",sev:"High",o:"R. Patel",age:14,m:"Escalate to vendor lead"},
+ {p:"Claims Intake Modernization",t:"Intake rules sign-off pending",sev:"High",o:"J. Alvarez",age:9,m:"Sign-off meeting booked 8 Oct"},
+ {p:"Agency Mgmt System Upgrade",t:"Integration test capacity short",sev:"Medium",o:"T. Nguyen",age:12,m:"Borrow QA from Driver Scoring API"},
+ {p:"Telematics Data Exchange",t:"Partner API change notice",sev:"Low",o:"M. Rao",age:5,m:"Track partner release notes"}
+];
+const DEC=[
+ {t:"Approve scope freeze on Policy Admin Migration",w:"Steering committee",by:"9 Oct"},
+ {t:"Move two data analysts to Policy Admin Migration",w:"Head of Engineering",by:"12 Oct"},
+ {t:"Confirm intake rules owner for Claims Intake",w:"Head of Claims",by:"8 Oct"}
+];
+const CAT_IN=[
+ ["Weekly project status","Project leads","Weekly","Is each project on track, and what changed?"],
+ ["Milestone and schedule tracker","Project leads","Weekly","Which dates moved, and by how much?"],
+ ["Risk and issue log","Project leads","Weekly","What can hurt delivery, and who owns it?"],
+ ["Dependency and blocker report","Project leads","Weekly","What is waiting on another team?"],
+ ["Change request log","Project leads","Every 2 weeks","What scope changes were asked for or approved?"],
+ ["Resource capacity and allocation","Team managers","Every 2 weeks","Who is overloaded or missing? Headcount only."],
+ ["Quality and delivery metrics","Delivery teams","Every sprint","Defects, velocity, test pass rate, SLA misses."]
+];
+const CAT_OUT=[
+ ["Executive status summary","Senior management","Weekly or every 2 weeks","Overall status, headline, what changed."],
+ ["Roadmap and milestone view","Senior management","Monthly","Where each project sits against plan."],
+ ["Top risks and mitigations","Steering committee","Monthly","Top 3 to 5 risks with owners and actions."],
+ ["Decision and escalation log","Steering committee","As needed","What needs a decision, from whom, by when."],
+ ["Delivery KPI trend","Senior management","Monthly","On-time milestones, slip days, defect trend."],
+ ["Cross-team dependency view","Senior management","Monthly","Blockers that need leadership help."],
+ ["Outcomes and adoption","Senior management","Quarterly","Usage, coverage, partner uptake. Non-financial."]
+];
+const LBL={G:"Green",A:"Amber",R:"Red"};
+const $=id=>document.getElementById(id);
+const chip=r=>`<span class="chip ${r}">${LBL[r]}</span>`;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+function catalog(el,rows,third){
+  el.innerHTML=`<thead><tr><th>Report</th><th>${third}</th><th>How often</th><th>Question it answers</th></tr></thead><tbody>`+
+    rows.map(r=>`<tr><td><strong>${esc(r[0])}</strong></td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td>${esc(r[3])}</td></tr>`).join("")+"</tbody>";
+}
+catalog($("cat-in"),CAT_IN,"From");
+catalog($("cat-out"),CAT_OUT,"To");
+
+let filter="All",sortSlip=false;
+function board(){
+  let rows=P.filter(p=>filter==="All"||p.rag===filter.charAt(0));
+  if(sortSlip) rows=[...rows].sort((a,b)=>b.slip-a.slip);
+  $("board").innerHTML=`<thead><tr><th>Project</th><th>Lead</th><th>Status</th><th>Progress</th><th class="num">Slip (days)</th><th class="num">Open risks</th></tr></thead><tbody>`+
+   (rows.length?rows.map(p=>`<tr><td><strong>${esc(p.n)}</strong></td><td>${esc(p.lead)}</td><td>${chip(p.rag)}</td>
+     <td><div class="bar" role="img" aria-label="${p.pct} percent"><i style="width:${p.pct}%"></i></div>${p.pct}%</td>
+     <td class="num">${p.slip}</td><td class="num">${p.risks}</td></tr>`).join(""):`<tr><td colspan="6">No projects with this status.</td></tr>`)+"</tbody>";
+}
+function filters(){
+  const f=["All","Red","Amber","Green"];
+  $("filters").innerHTML=f.map(x=>`<button aria-pressed="${filter===x}" data-f="${x}">${x}</button>`).join("")+
+    `<span class="sp"></span><button aria-pressed="${sortSlip}" data-sort="1">Sort by slip</button>`;
+}
+$("filters").addEventListener("click",e=>{
+  const b=e.target.closest("button"); if(!b) return;
+  if(b.dataset.f) filter=b.dataset.f;
+  if(b.dataset.sort) sortSlip=!sortSlip;
+  filters(); board();
+});
+filters(); board();
+
+$("risks").innerHTML=`<thead><tr><th>Project</th><th>Risk</th><th>Severity</th><th>Owner</th><th class="num">Age (days)</th><th>Mitigation</th></tr></thead><tbody>`+
+ RISKS.map(r=>`<tr><td>${esc(r.p)}</td><td><strong>${esc(r.t)}</strong></td>
+ <td>${chip(r.sev==="High"?"R":r.sev==="Medium"?"A":"G").replace(/Red|Amber|Green/,r.sev)}</td>
+ <td>${esc(r.o)}</td><td class="num">${r.age}</td><td>${esc(r.m)}</td></tr>`).join("")+"</tbody>";
+
+/* Outbound sample, computed from the same project data */
+const cnt={G:0,A:0,R:0}; P.forEach(p=>cnt[p.rag]++);
+const overall=cnt.R?"R":cnt.A?"A":"G";
+const onTime=Math.round(P.filter(p=>p.slip<=3).length/P.length*100);
+const avgSlip=Math.round(P.reduce((a,p)=>a+p.slip,0)/P.length);
+const highRisks=RISKS.filter(r=>r.sev==="High").length;
+$("head").innerHTML=`<div class="head ${overall}">${chip(overall)}<h3>${cnt.R} red, ${cnt.A} amber, ${cnt.G} green. Policy Admin Migration needs a scope decision this week.</h3>
+<p>Two amber projects are recovering. Telematics Data Exchange and Driver Scoring API are on plan.</p></div>`;
+$("kpis").innerHTML=[
+ [onTime+"%","Projects within 3 days of plan"],
+ [avgSlip+" days","Average schedule slip"],
+ [highRisks,"High risks open"],
+ [cnt.G+" / "+P.length,"Projects green"]
+].map(k=>`<div class="kpi"><b>${k[0]}</b><span>${k[1]}</span></div>`).join("");
+
+const M=["Oct","Nov","Dec","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep"];
+let rg=M.map((m,i)=>`<div class="m" style="grid-column:${i+2};grid-row:1">${m}</div>`).join("");
+P.forEach((p,i)=>{
+  const row=i+2;
+  rg+=`<div class="nm" style="grid-column:1;grid-row:${row}">${esc(p.n)}</div>`+
+   `<div class="tr ${p.rag}" style="grid-column:${p.s+2}/${p.e+3};grid-row:${row}" title="${LBL[p.rag]}, ${p.pct}% done"><i style="width:${p.pct}%"></i></div>`;
+});
+rg+=`<div class="now" style="grid-column:2;grid-row:1/${P.length+2};margin-left:8%" title="Today"></div>`;
+$("road").innerHTML=rg;
+
+$("toprisks").innerHTML=RISKS.filter(r=>r.sev==="High").map(r=>`<li><strong>${esc(r.t)}</strong><span>${esc(r.p)}. Owner ${esc(r.o)}. Action: ${esc(r.m)}.</span></li>`).join("");
+$("decisions").innerHTML=DEC.map(d=>`<li><strong>${esc(d.t)}</strong><span>${esc(d.w)}. Needed by ${esc(d.by)}.</span></li>`).join("");
+
+/* Tabs */
+const tabs=[["t-in","p-in"],["t-out","p-out"]];
+tabs.forEach(([t,p])=>$(t).addEventListener("click",()=>{
+  tabs.forEach(([a,b])=>{const on=a===t;$(a).setAttribute("aria-selected",on);$(b).hidden=!on;});
+}));
+</script>
+</body>
+</html>
