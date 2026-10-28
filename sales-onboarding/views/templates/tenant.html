@@ -1,0 +1,20 @@
+<template id="experience-shell">
+  <div class="shell"><aside class="sidebar" data-slot="sidebar"></aside><div><header class="topbar"><div class="row" data-slot="identity"></div><nav data-slot="navigation"></nav></header>
+  <main id="main" tabindex="-1" class="content"><div id="page-errors" class="error-box" role="alert" tabindex="-1"></div><div data-slot="body"></div><footer class="footer"><span>Local prototype · progress saved in this tab</span><div><button data-action="about">About this preview</button> · <button data-action="reset">Start over</button></div></footer></main></div></div>
+</template>
+<template id="sales-products">
+  <div data-slot="intro"></div><section class="assist-banner"><div class="grow"><h3>Choose it yourself, or get a little guidance.</h3><p>Explore products and bundles. All we need here is how many licenses you want.</p></div><a class="btn secondary" href="./assistance.html">Help me choose ↗</a></section>
+  <div class="layout"><section><div class="mode-tabs" role="tablist" aria-label="Purchase options" data-slot="tabs"></div><div data-slot="products"></div><section class="card spaced" data-slot="quantities"></section><div class="notice spaced">Names, user emails, roles, invitations, and workspace details belong to onboarding, after payment. Seat counts are the only team information collected during purchasing.</div></section><div data-slot="summary"></div></div>
+</template>
+<template id="sales-checkout">
+  <div data-slot="intro"></div><div class="layout"><form id="checkout-form" class="card"><h2>Confirm your purchase</h2><p class="lede">Review products and seat quantities. No employee or team-member details are needed.</p><div data-slot="checklist"></div><div class="table-scroll spaced" data-slot="order"></div><button class="link spaced" type="button" data-route="products">Edit products or seat counts</button><div class="fields" data-slot="fields"></div><p class="form-note">Receipt email identifies the purchaser only. It does not provision a user or consume a license.</p><div class="notice spaced">Simulated payment only. No card or bank information is collected, and no charge will occur.</div><label class="check-label"><input type="checkbox" name="accepted" required><span data-slot="consent"></span></label><div class="form-actions"><button type="button" class="text-button" data-route="products">← Seat quantities</button><button class="btn" data-milestone="purchase" type="submit">Complete purchase preview →</button></div></form><div data-slot="summary"></div></div>
+</template>
+<template id="purchase-receipt">
+  <div class="success-mark" data-slot="icon"></div><div data-slot="intro"></div><div class="experience-handoff"><span class="pill success">SALES COMPLETE</span><h2 class="spaced">Your purchase is complete. Setup is a separate next step.</h2><p class="muted spaced">Your licenses are reserved. No workspace or team users have been created yet. Continue when you’re ready to name the workspace and assign access.</p><div data-slot="receipt"></div><div class="form-actions"><button class="text-button" data-action="download-order">Download order summary</button><a class="btn" data-slot="setup-link"></a></div></div>
+</template>
+<template id="setup-screen">
+  <div data-slot="intro"></div><div class="setup-layout"><section><div id="setup-hints" data-slot="checklist"></div><div class="card spaced" data-slot="form"></div></section><aside class="setup-aside" data-slot="aside"></aside></div>
+</template>
+<template id="setup-complete">
+  <div class="success-mark" data-slot="icon"></div><div data-slot="intro"></div><div class="success-grid"><section class="card"><h2>Ready for your team’s next step</h2><div data-slot="status"></div><div class="form-actions"><button class="btn" data-action="workspace-preview">Open workspace overview →</button><button class="text-button" data-action="download">Download setup summary</button></div></section><aside class="card" data-slot="aside"></aside></div>
+</template>
