@@ -48,3 +48,27 @@ This is an interaction prototype. Payment, email, provisioning, identity configu
 Browser checks completed tenant and carrier purchases and onboarding, including failed payment/retry, receipt handoff, post-payment user details, unused seats, required checkbox gating, and optional recommendations. Evidence is under `tests/artifacts/`. The existing responsive fixture is available at `tests/responsive.html`.
 
 The prior standalone source is preserved at `../onboarding-redesign/legacy-standalone.html`; the root legacy entry redirects to the MVC project.
+
+
+## Identity / tenant ERD alignment — 2026-10-29
+
+Updated the local prototype against the supplied `01a_identity_tenant.svg` (retained under `onboarding-mvc/reference/` in the workspace). The new identity model separates sign-in organization, business workspace, legal-entity intent, tenant membership, and module assignment intent. Post-payment setup now collects organization name, optional legal name, business type, data-region preference, and shared/dedicated isolation preference. Carrier onboarding fixes business type to carrier; standard onboarding covers the other five types.
+
+Memberships now have stable UUIDs. Explicit reuse shares a membership across modules; email is only contact data. Shared contact and membership-type changes propagate, while per-module role preferences remain independent. Separate same-email drafts require review rather than being silently merged. Invitations use membership IDs and remain pending until verified sign-in. The nominated owner is not inferred to be an authenticated identity from the receipt email.
+
+Purchased module visibility and enablement are separate controls, preserving billing and seat capacity. Changing them invalidates readiness. Completion offers an ERD-oriented setup-intent JSON export with unresolved server IDs clearly null and no fabricated external identities, legal consents, or subscription projections. See `reference/erd-alignment.md` inside the MVC folder for the mapping and deliberate boundaries.
+
+Existing v3 drafts retain payment and seats. Older drafts without identity metadata return to workspace review and receive independent pending membership IDs; their contact emails are not used to merge identities. Storage remains v3, with asset cache version 4.0. 26 automated tests pass. Browser verification covered purchase → organization setup → partner membership → invitations → module visibility and readiness invalidation → completion.
+
+
+## Independent module seats and help demo — 2026-10-29
+
+User clarified that licenses are never pooled across modules: workspace administration alone consumes zero seats, while each module maintains its own fixed capacity. Reusing a tenant membership across modules does not share a license. A workspace administrator who also uses a product requires a seat in that product. Added explicit UI copy and a regression test proving unused Claims capacity cannot cover a full Legal module.
+
+User confirmed no live-chat service is needed: this is a complete local demonstration. Added a persistent Chat with us launcher on sales, onboarding, and intake pages; topic guidance, typed messages, a simulated specialist handoff, request-specific follow-up permission, and downloadable lead/transcript. All replies and lead handling are explicitly simulated. Context includes only journey stage and selected module names, not workspace details or rosters. Separate tenant/carrier chat stores use `vdx:chat:{persona}:v1`. Closing the chat preserves it; Clear demo chat resets it. Lead form drafts survive topic changes.
+
+Guidance intake now supports dedicated carrier context and separate tenant/carrier storage at `vdx:mvc:assistance:{persona}:v2`. It collects indicative needs, product interests, timing, reply email, and contact permission without provisioning users. Carrier return links stay in carrier sales. Prior generic assistance storage is retained but is not imported into the new persona-specific drafts.
+
+32 tests pass, including free administration, independent module limits, chat permission and context boundaries, and carrier intake. Browser checks verified the handoff/lead confirmation and carrier intake submission. No real agents, CRM records, messages, payments, or bookings are created.
+
+Suggested future demo scope (not yet implemented): a per-module capacity dashboard, invitation expiry/resend/revocation, an explicit add-seat purchase flow, and an administration activity log.

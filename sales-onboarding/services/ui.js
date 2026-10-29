@@ -1,4 +1,4 @@
-import { esc } from '../views/helpers.js?v=3.1';
+import { esc } from '../views/helpers.js?v=4.2.1';
 let lastFocus, timer;
 export function dialog(title,html) {
   const modal=document.getElementById('modal');if(!modal.open)lastFocus=document.activeElement;
