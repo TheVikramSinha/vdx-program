@@ -1,0 +1,46 @@
+.v8-home-tables{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}
+.v8-home-tables>.card{min-width:0;overflow:hidden}
+.v8-home-tables .card-head{height:112px;padding:20px;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:12px;background:#fff}
+.v8-home-tables .card-head h3{font-size:16px;margin:0;line-height:24px}
+.v8-home-tables .table-wrap{width:100%;overflow:visible}
+.v8-home-tables table{width:100%;min-width:0;table-layout:fixed;font-size:12px}
+.v8-home-tables th,.v8-home-tables td{padding:16px 12px;white-space:normal;overflow-wrap:break-word;vertical-align:top;line-height:1.5}
+.v8-home-tables th{font-size:10px;letter-spacing:.035em;text-transform:uppercase;background:#f5f7fa;color:#69768a}
+.v8-home-tables th:first-child{width:47%}.v8-home-tables th:nth-child(2){width:25%}.v8-home-tables th:nth-child(3){width:28%}
+.v8-home-tables .td-name{font-size:12px;line-height:1.5}
+.v8-home-tables .table-muted{font-size:11px;margin-top:6px;color:#6a7789}.v8-home-tables .table-muted a{color:#6a7789}
+.dashboard-subline{font-size:10px;margin-top:5px}.dashboard-subline a{color:#7b8798}
+.dashboard-priority{margin-top:8px}.v8-home-tables .pill,.v8-home-tables .badge{font-size:10px;padding:4px 7px;white-space:normal;word-break:normal}
+.dashboard-coverage{display:flex;flex-direction:column;gap:5px;font-size:10px;color:#58677b}
+.dashboard-coverage span{padding-left:8px;border-left:2px solid #dfe5ed;line-height:1.5}
+.dashboard-owner{display:flex;flex-direction:column;gap:7px;margin-bottom:10px;font-size:11px}
+.dashboard-owner span{display:flex;flex-direction:column}.dashboard-owner small{font-size:9px;color:#8590a1}
+.v8-home-tables .table-footer{padding:14px;flex-wrap:wrap;gap:10px;font-size:11px}.v8-home-tables .pager{gap:6px}.v8-home-tables .pager .btn{padding:5px 8px}
+.read-notes{white-space:pre-wrap}.v7-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+/* Shared KPI treatment for dashboard, task, agency and carrier summaries. */
+.kpi,.v7-metric{position:relative;isolation:isolate;overflow:hidden;border:1px solid #e0e6ee!important;border-radius:14px!important;background:linear-gradient(125deg,#fff 45%,#edf3fa)!important;box-shadow:0 5px 18px #24364c08!important;padding:23px 24px!important;min-height:148px}
+.kpi::before,.v7-metric::before{content:'';position:absolute;inset:22px auto 22px 0;width:4px;background:#526e91;border-radius:0 4px 4px 0}
+.kpi::after,.v7-metric::after{content:'';position:absolute;z-index:-1;width:110px;height:110px;right:-35px;bottom:-48px;border:18px solid #56799e0a;border-radius:50%}
+.kpi:nth-child(1),.v7-metric:nth-child(1){background:linear-gradient(125deg,#fff 45%,#fff1e8)!important}.kpi:nth-child(1)::before,.v7-metric:nth-child(1)::before{background:#b45b2d}
+.kpi:nth-child(3),.v7-metric:nth-child(3){background:linear-gradient(125deg,#fff 45%,#edf7f3)!important}.kpi:nth-child(3)::before,.v7-metric:nth-child(3)::before{background:#38856b}
+.kpi-label,.v7-metric>span{font-size:12px!important;font-weight:600;color:#526176!important;letter-spacing:.01em}
+.kpi-icon{background:#fff!important;border:1px solid #e4e9ef;border-radius:10px!important;width:34px!important;height:34px!important;box-shadow:0 2px 5px #24364c05}
+.kpi-value,.v7-metric>strong{font-size:34px!important;font-weight:650!important;letter-spacing:-1.2px;color:#25394f!important;line-height:1.2;margin:13px 0 7px}
+.kpi>small,.v7-metric>small{font-size:11px;color:#788598!important}
+.carrier-metrics{gap:0!important;padding:0!important;background:linear-gradient(110deg,#f7f9fc,#fff);border-top:1px solid #e5eaf1}
+.carrier-metrics>div{padding:20px 24px;border-right:1px solid #e5eaf1}.carrier-metrics>div:last-child{border-right:0}.metric-label{font-size:11px!important;color:#6e7d90!important}.metric-value{font-size:24px!important;font-weight:650;color:#2c455f!important;margin-top:7px}
+@media(max-width:1099px){.v8-home-tables{grid-template-columns:1fr}.v8-home-tables .card-head{height:auto;min-height:96px}}
+@media(max-width:767px){.v7-metrics{grid-template-columns:1fr}.kpi,.v7-metric{min-height:130px;padding:20px!important}.v8-home-tables td{padding:12px 9px}.v8-home-tables .card-head{padding:18px}.v8-home-tables th:first-child{width:44%}.v8-home-tables th:nth-child(3){width:31%}}
+
+/* Full-width dashboard tables, stacked in reading order. */
+.v8-home-tables{grid-template-columns:minmax(0,1fr)}
+.v8-home-tables .card-head{height:auto;min-height:76px;flex-direction:row;align-items:center;justify-content:space-between}
+.v8-home-tables .table-wrap{overflow-x:auto}
+.v8-home-tables table{min-width:740px;table-layout:auto;font-size:12px}
+.v8-home-tables th:first-child,.v8-home-tables th:nth-child(2),.v8-home-tables th:nth-child(3){width:auto}
+.v8-home-tables th,.v8-home-tables td{padding:15px 16px}
+@media(max-width:767px){.v8-home-tables .card-head{flex-direction:column;align-items:flex-start;gap:12px}}
+.dashboard-table-tools{padding:14px 20px;margin:0;border-bottom:1px solid #e7ebf1;background:#fafbfd;gap:10px}.dashboard-table-tools input{flex:1;min-width:220px}.dashboard-table-tools select{min-width:150px}.toolbar{flex-wrap:wrap}
+.table-sort-button{appearance:none;border:0;background:transparent;padding:0;display:inline-flex;align-items:center;gap:7px;width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;line-height:1.45;text-transform:inherit;letter-spacing:inherit;min-height:28px}.table-sort-button:hover{color:#a74d23}.sort-indicator{font-size:13px;opacity:.45;margin-left:auto;flex-shrink:0}th[aria-sort=ascending] .sort-indicator,th[aria-sort=descending] .sort-indicator{opacity:1;color:#ae552b}th[aria-sort=ascending],th[aria-sort=descending]{background:#f0f3f8!important}.table-sort-button:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid #ba673e;outline-offset:3px;border-radius:4px}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}input[type=search]{min-width:0}button:disabled{cursor:not-allowed}
+/* Two complete tables only when the workspace has room for both. */
+@media(min-width:1800px){.v8-home-tables{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:start}.v8-home-tables .card-head{min-height:80px}.v8-home-tables table{min-width:0;font-size:12px}.v8-home-tables th,.v8-home-tables td{padding:14px 10px}.v8-home-tables .dashboard-table-tools{min-height:80px;align-content:center}.v8-home-tables th:first-child{width:auto}}
