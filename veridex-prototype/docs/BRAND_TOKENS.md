@@ -32,6 +32,8 @@ Rules applied (inferred, because none are supplied): light backgrounds only (cre
 - Shades for text/hover: `--rust-dark #6F2412`, `--teal-dark #285A50`, `--steel-dark #33596A`, `--ochre-dark #7A4D12`.
 - Readability neutrals: `--white #FFFFFF`, `--ink #2A1A12`, `--ink-2 #5A4A40`, `--border-strong #8C8078`.
 
+- UI neutrals (refresh v2): `--line` (warm grey 72% over white, hairlines), `--side-bg` (warm surface/cream mix, sidebar and table heads), `--track` (segmented-control track).
+
 ## Semantic tokens
 `--primary` rust · `--success` teal · `--info` steel · `--warning` ochre · `--danger` rust · `--focus` steel (3 px ring) · `--disabled-bg` warm grey · persona accent `--persona` (teal tenant / steel carrier / rust platform). Full list: `assets/css/tokens.css`.
 
@@ -53,4 +55,7 @@ Rules applied (inferred, because none are supplied): light backgrounds only (cre
 Status is never colour-only: badges carry icon + word; seat meter uses solid vs hatched fill plus numbers and a text label; errors have icon, text and summary. WCAG 2.2 AA targeted and spot-verified (contrast, keyboard, focus, reduced motion). No formal certification claimed.
 
 ## Type and spacing
-System stack (`Avenir Next`, `Segoe UI`, system-ui) — no web-font download, works offline. 4-px spacing scale, 6/10/14 px radii.
+Stack: `Inter` if installed, else `Segoe UI` / system-ui — no web-font download, works offline. Base 15 px, headings weight 560–600 with tight tracking. 4-px spacing scale, 10/16/20 px radii.
+
+## UI refresh v2 (reference: `vdx-sample-ui`)
+Ideas adopted: left sidebar shell with grouped navigation, slim top bar with status pill, soft paper background, hairline white cards, pill segmented controls, numbered step pills, icon tiles on product cards, large light totals, blurred dialog backdrop. Not adopted: its colours, typed wordmark/logo, copy, product names, prices, code.

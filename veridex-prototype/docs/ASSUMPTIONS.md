@@ -25,6 +25,9 @@ Brand logo and palette; licensing rules (§4); privacy boundary (no roster/works
 ## Additions beyond the brief
 "Seats needed" comparison tool (standalone vs every bundle, seats beyond need); tier comparison table; saved quote download; receipt download; CSV roster import with row validation; platform quote preview on draft catalog; scheduled publish with "go live now"; catalog version history; billing-event log; plan-change request; expired-invitation and full-module alerts; deterministic demo scenarios; DOM-morph rendering to keep focus.
 
+## Change log
+- v2 (17 Nov 2026): UI/UX restyle only; added visible **Reset demo** action. No feature, rule or flow changes. Model tests unchanged and passing.
+
 ## Deferred / simulated
 Real payment, tax, invoices, refunds, dunning; identity and SSO; email delivery; live chat; CRM; server authorization; multi-currency price books (structure allows it, UI shows USD); customer-specific price books; multiple workspaces per customer; self-service tier upgrade; renewal job; automatic invitation expiry by clock (demo uses a "Simulate expiry" action); localisation.
 

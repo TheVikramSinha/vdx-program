@@ -25,14 +25,20 @@ No build step, no dependencies. ES modules need HTTP (not file://).
 | `veridex-admin.html` | VeriDex staff | Products, prices, SKUs, publish, quote preview, customers, orders, audit |
 | `demo-leads.html` | VeriDex staff | Simulated lead/follow-up inbox |
 
-**Demo tools** (top strip, every page): load a scenario, export/import JSON, reset.
+**Reset demo** (top bar and sidebar, every page): one click + confirm returns everything to a clean first-run state for a new tester.
+
+**Demo tools** (top bar): load a scenario, export/import JSON.
+
+No database. Plain JavaScript (ES modules). State lives in this browser's localStorage only.
+
+**UI refresh v2:** layout and styling only (sidebar shell, softer cards, segmented controls, lighter type). Features, rules and flows are unchanged from v1. Design ideas taken from `vdx-sample-ui`; no code, copy, logo or colours were copied — VeriDex palette and supplied logo are kept.
 
 ## Tests
 
 ```bash
 node tests/run.mjs                 # 21 model tests (acceptance criteria 1–15, 17–20)
 pip install playwright && playwright install chromium
-python3 tests/ui_e2e.py            # 40 browser checks, writes docs/screenshots/
+python3 tests/ui_e2e.py            # 41 browser checks, writes docs/screenshots/
 ```
 Results: `docs/TEST_RESULTS.md`.
 

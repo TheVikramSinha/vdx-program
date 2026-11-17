@@ -1,6 +1,6 @@
 # Demo walkthrough
 
-Start: **Demo tools → Fresh start**.
+Start: **Reset demo** (top bar) → confirm. Clean state, sample catalog, three sample leads.
 
 ## A. Tenant: buy, fail, retry, succeed (5 min)
 1. `index.html` → **Product bundles** → *Try the 10 Claims + 4 Legal example*.

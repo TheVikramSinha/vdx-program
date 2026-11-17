@@ -30,13 +30,25 @@ export function mount({ page, persona, view, handlers = {}, onRender }) {
   const all = { ...handlers,
     'nav-toggle': (el) => { const nav = document.getElementById('site-nav'); const open = nav.classList.toggle('open'); el.setAttribute('aria-expanded', String(open)); },
     'demo-tools': () => demoTools(refresh),
+    'reset-demo': () => resetDemo(),
   };
   root.addEventListener('click', (e) => { const el = e.target.closest('[data-action]'); if (el && root.contains(el)) { if (el.tagName !== 'A' || el.getAttribute('href') === '#') e.preventDefault(); run(all[el.dataset.action], el, e); } });
   root.addEventListener('change', (e) => { const el = e.target.closest('[data-change]'); if (el) run(all[el.dataset.change], el, e); });
   root.addEventListener('submit', (e) => { const f = e.target.closest('form[data-submit]'); if (f) { e.preventDefault(); run(all[f.dataset.submit], f, e); } });
   refresh();
+  try { const f = sessionStorage.getItem('vdx.demo.flash'); if (f) { sessionStorage.removeItem('vdx.demo.flash'); toast(f); } } catch { /* private mode */ }
   if (incompatible.length) toast(`Saved demo data from an older version could not be opened (${incompatible.join(', ')}). It was set aside and a clean state was started.`, 'error');
   return { refresh, root };
+}
+/** Reset Demo: clears carts, purchases, workspaces, chat and catalog edits, reseeds the sample catalog and sample leads, and returns to the shop. */
+async function resetDemo() {
+  const ok = await confirmDialog({ title: 'Reset the demo?', confirmLabel: 'Reset demo', body: html`<p>Everything returns to a clean first-run state for a new tester:</p>
+    <ul><li>Carts, orders and receipts cleared (tenant and carrier)</li><li>Workspaces, people, seats and invitations cleared</li><li>Catalog edits discarded; sample catalog restored</li><li>Chat and guidance drafts cleared; sample leads restored</li></ul>
+    <p class="small muted">Only this browser is affected. This cannot be undone — use Demo tools → Export JSON first to keep a copy.</p>` });
+  if (!ok) return;
+  loadScenario('fresh');
+  try { sessionStorage.setItem('vdx.demo.flash', 'Demo reset. You are starting from a clean state.'); } catch { /* private mode */ }
+  location.href = 'index.html';
 }
 async function demoTools(refresh) {
   const choice = await openDialog({ title: 'Demo tools', body: html`
@@ -45,7 +57,7 @@ async function demoTools(refresh) {
       ${Object.entries(SCENARIOS).map(([k, s]) => html`<button type="button" class="btn btn-ghost" data-scn="${k}" style="justify-content:flex-start;text-align:left"><span><b>${s.label}</b><br><span class="small muted">${s.detail}</span></span></button>`)}</div></fieldset>
     <fieldset><legend>Data</legend><div class="row"><button type="button" class="btn btn-ghost" data-tool="export">Export JSON</button>
       <label class="btn btn-ghost" for="import-file">Import JSON</label><input class="sr-only" type="file" id="import-file" accept="application/json,.json">
-      <button type="button" class="btn btn-secondary" data-tool="reset">Reset all demo data</button></div></fieldset>`,
+      <button type="button" class="btn btn-secondary" data-tool="reset">Reset demo</button></div></fieldset>`,
     onMount(d, done) {
       d.addEventListener('click', async (e) => {
         const scn = e.target.closest('[data-scn]')?.dataset.scn; const tool = e.target.closest('[data-tool]')?.dataset.tool;
@@ -61,7 +73,7 @@ async function demoTools(refresh) {
       });
     } });
   if (!choice) return;
-  if (choice.reset) { if (!(await confirmDialog({ title: 'Reset all demo data?', body: html`<p>Carts, purchases, workspaces, leads and catalog edits in this browser will be cleared.</p>`, confirmLabel: 'Reset', kind: 'primary' }))) return; resetAll(); }
+  if (choice.reset) return resetDemo();
   if (choice.scn) loadScenario(choice.scn);
   location.hash = ''; location.reload();
 }

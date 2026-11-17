@@ -7,7 +7,7 @@ OUT = sys.argv[1] if len(sys.argv) > 1 else 'docs/screenshots'
 os.makedirs(OUT, exist_ok=True)
 results = []
 def ok(name): results.append(name); print('✔', name)
-CLEAN = '.site-header{position:static!important}.with-aside>aside,.side{position:static!important}.toasts,.chat-fab{display:none!important}'
+CLEAN = '.sidebar{position:static!important;height:auto!important}.topbar,.with-aside>aside{position:static!important}.toasts,.chat-fab{display:none!important}main{animation:none!important}'
 async def shot(pg, path, full_page=False):
     h = await pg.add_style_tag(content=CLEAN if full_page else '.toasts{display:none!important}')
     await pg.screenshot(path=path, full_page=full_page)
@@ -172,6 +172,12 @@ async def main():
 
         # --- reset / scenario ---
         await pg.goto(B + 'index.html'); await pg.evaluate("import('./services/scenarios.js').then(m=>m.loadScenario('running'))"); await pg.goto(B + 'tenant-admin.html'); await expect(pg.get_by_role('heading', name='Northwind Claims & Legal')).to_be_visible(); ok('Demo scenario loads')
+        # --- Reset demo: clean state for a new tester ---
+        await pg.goto(B + 'tenant-admin.html'); await pg.click('#reset-demo-btn'); await expect(pg.get_by_role('heading', name='Reset the demo?')).to_be_visible(); await shot(pg, f'{OUT}/36-reset-demo-confirm.png')
+        await pg.get_by_role('button', name='Reset demo', exact=True).last.click(); await pg.wait_for_url('**/index.html'); await expect(pg.get_by_text('Nothing added yet')).to_be_visible()
+        st = await pg.evaluate("(()=>{const g=k=>JSON.parse(localStorage['vdx.demo.'+k]).data;return [g('platform').orders.length, g('platform').catalog.version, g('ws.tenant').members.length, g('ws.carrier').subscriptions.length, g('draft.tenant').cart.lines.length, g('draft.tenant').chat.messages.length, g('platform').leads.length]})()")
+        assert st == [0, 1, 0, 0, 0, 0, 3], st
+        await pg.goto(B + 'onboarding.html'); await expect(pg.get_by_role('heading', name='Onboarding unlocks after purchase')).to_be_visible(); ok('Reset demo returns every area to a clean first-run state')
         assert not errs, errs; ok('No console or page errors')
         print(f'\n{len(results)} UI checks passed'); await br.close()
 asyncio.run(main())

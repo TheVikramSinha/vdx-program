@@ -1,4 +1,4 @@
-# Test results — 17 Nov 2026
+# Test results — 17 Nov 2026 (after UI refresh v2)
 
 ## Model tests — `node tests/run.mjs`
 ```
@@ -69,9 +69,10 @@ Criterion 16 (logo/palette) is verified by inspection: see `BRAND_TOKENS.md` and
 ✔ Keyboard: skip link first, dialog closes on Esc and restores focus
 ✔ Mobile: no horizontal overflow, menu works
 ✔ Demo scenario loads
+✔ Reset demo returns every area to a clean first-run state
 ✔ No console or page errors
 
-40 UI checks passed
+41 UI checks passed
 ```
 
 ## Acceptance criteria map
@@ -97,6 +98,7 @@ Criterion 16 (logo/palette) is verified by inspection: see `BRAND_TOKENS.md` and
 | 18 | 10 + 4 unequal demand | model [18]; UI comparison |
 | 19 | Capacity from order; price edits do not rewrite | model [19]; UI "@ $37.80" |
 | 20 | Platform vs tenant scopes | model [20]; UI role separation |
+| + | Reset demo → clean first-run state | UI "Reset demo returns every area…" |
 
 ## Not tested
 Screen-reader sessions (NVDA/VoiceOver), Firefox/Safari, file-import dialog through the UI (import validation is covered at model level), real network failure.

@@ -21,8 +21,10 @@ function moduleCard(vm, p) {
   const unit = unitPrice(cat, p.id, tierId);
   const t = tier(cat, p.id, tierId);
   const added = inCart[s.id];
+  const MOD_ICON = { POL: 'doc', CLM: 'shield', LGL: 'scale', INS: 'chart' };
   return html`<article class="card offer ${added ? 'selected' : ''}" aria-labelledby="h-${p.id}">
-    <header><div><h3 id="h-${p.id}">${p.name}</h3><p class="muted small" style="margin:0">${p.summary}</p></div>${added ? badge('In order', 'success', 'check') : ''}</header>
+    <div class="offer-top"><span class="mod-icon t${vm.cat.products.indexOf(p) % 4}">${icon(MOD_ICON[p.code] || 'box')}</span><span class="row" style="gap:8px">${added ? badge('In order', 'success', 'check') : ''}<span class="pick" aria-hidden="true">${icon('check')}</span></span></div>
+    <header><div><h3 id="h-${p.id}">${p.name}</h3><p class="muted small" style="margin:0">${p.summary}</p></div></header>
     <fieldset><legend class="sr-only">${p.name} tier</legend><div class="segmented">${skus.map((x) => { const tt = tier(cat, p.id, x.components[0].tierId); return html`<label><input type="radio" name="tier-${p.id}" value="${tt.id}" data-change="tier" data-pid="${p.id}" ${tt.id === tierId ? html`checked` : ''}>${tt.name}</label>`; })}</div></fieldset>
     <div class="price"><b>${money(unit)}</b> <span class="muted small">per seat / month · illustrative</span></div>
     <ul class="feat">${t.features.map((f) => html`<li>${f}</li>`)}</ul>
