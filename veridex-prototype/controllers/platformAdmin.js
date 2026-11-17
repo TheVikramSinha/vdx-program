@@ -1,0 +1,80 @@
+// VeriDex Admin controller (platform scope). All mutations go through models/platform.js, which enforces platform roles.
+import { loadState, mount, toast, html, openDialog, confirmDialog } from './base.js';
+import { platformAdmin, productForm, skuForm, TABS } from '../views/templates/platformAdmin.js';
+import { alert } from '../views/templates/components.js';
+import * as P from '../models/platform.js';
+import { validateCatalog, product } from '../models/catalog.js';
+import { compareDemand } from '../models/pricing.js';
+import { capacity, liveMembers } from '../models/licensing.js';
+import { toMinor, toBps, toQty } from '../models/money.js';
+import { load } from '../services/storage.js';
+
+const S = loadState('tenant'); // platform aggregate is shared; workspaces are read only for commercial facts
+const local = { qp: { persona: 'tenant', demand: { mod_claims: 10, mod_legal: 4 } } };
+const tab = () => (TABS.some(([k]) => k === location.hash.slice(1)) ? location.hash.slice(1) : 'overview');
+const pf = () => S.platform;
+function customers() {
+  return ['tenant', 'carrier'].map((p) => { const ws = load(`ws.${p}`); const first = pf().orders.find((o) => o.id === ws.orders[0]);
+    return { persona: p, name: first?.contact?.company || ws.onboarding.org.orgName || `${p === 'carrier' ? 'Carrier' : 'Tenant'} demo workspace`, contact: first?.contact, subs: ws.subscriptions, cap: capacity(ws), people: liveMembers(ws).length, onboarded: !!ws.onboarding.completedAt, leads: pf().leads.filter((l) => l.persona === p).length }; });
+}
+const view = () => platformAdmin({ platform: pf(), tab: tab(), changes: P.draftChanges(pf()), issues: validateCatalog(pf().catalog.draft), canEdit: P.can(pf(), 'catalog.edit'), canPublish: P.can(pf(), 'catalog.publish'),
+  customers: tab() === 'customers' ? customers() : [], options: compareDemand(pf().catalog.draft, local.qp.persona, local.qp.demand), ...local });
+const commit = () => { S.save(); app.refresh(); };
+
+async function editProduct(p) {
+  const ok = await openDialog({ title: p.id ? `Edit ${p.name}` : 'New product', wide: true, body: productForm(p), actions: [{ label: 'Cancel', value: null }, { label: 'Save to draft', submit: true, kind: 'primary' }],
+    onSubmit: (fd) => { P.saveProduct(pf(), { id: p.id, name: fd.get('pf-name'), summary: fd.get('pf-summary'), description: fd.get('pf-description'), status: fd.get('pf-status'), personas: fd.getAll('pf-persona'),
+      tiers: [0, 1, 2].filter((i) => fd.has(`pf-tier-name-${i}`)).map((i) => ({ id: fd.get(`pf-tier-id-${i}`) || undefined, name: String(fd.get(`pf-tier-name-${i}`)), features: String(fd.get(`pf-tier-feat-${i}`) || '').split('\n') })) }); } });
+  commit(); if (ok) toast('Product saved to the draft catalog. Set tier prices under Pricing.');
+}
+async function editSku(s, isNew) {
+  const d = pf().catalog.draft;
+  const ok = await openDialog({ title: isNew ? `New ${s.type === 'bundle' ? 'bundle' : 'individual'} SKU` : `Edit ${s.id}`, wide: true, body: skuForm(d, s, isNew), actions: [{ label: 'Cancel', value: null }, { label: 'Save to draft', submit: true, kind: 'primary' }],
+    onSubmit: (fd) => {
+      const fixed = s.type === 'bundle' && fd.get('sf-qtype') === 'fixed_package';
+      const min = toQty(fd.get('sf-min')), max = toQty(fd.get('sf-max'));
+      if (!min || !max || max < min) throw new Error('Quantity limits must be whole numbers, with maximum at least the minimum.');
+      const discountBps = s.type === 'bundle' && !fixed ? toBps(fd.get('sf-discount')) : 0;
+      if (discountBps == null || discountBps > 6000) throw new Error('Bundle discount must be a percentage from 0 to 60.');
+      const pack = fixed ? toMinor(fd.get('sf-pack')) : undefined;
+      if (fixed && !pack) throw new Error('Enter a pack price, e.g. 420.00.');
+      const components = fd.getAll('sf-inc').map((pid) => { const c = { productId: pid, tierId: fd.get(`sf-tier-${pid}`) }; if (fixed) { c.fixedSeats = toQty(fd.get(`sf-fixed-${pid}`)); if (!c.fixedSeats) throw new Error(`${product(d, pid).name}: fixed seats per pack must be a whole number above 0.`); } return c; });
+      if (s.type === 'standalone' && components.length !== 1) throw new Error('An individual SKU contains exactly one module.');
+      if (s.type === 'bundle' && components.length < 2) throw new Error('A bundle needs at least two modules.');
+      const next = { id: String(fd.get('sf-id')), type: s.type, name: String(fd.get('sf-name')).trim(), description: String(fd.get('sf-description')).trim(), status: fd.get('sf-status'), audience: fd.getAll('sf-audience'), components,
+        quantityRule: { type: fixed ? 'fixed_package' : 'per_module', min, max }, discountBps };
+      if (!next.name) throw new Error('SKU name is required.');
+      if (fixed) next.packagePriceMinor = pack;
+      P.saveSku(pf(), next, isNew ? null : s.id);
+    } });
+  commit(); if (ok) toast('SKU saved to the draft. Publish to make it live.');
+}
+const app = mount({ page: 'veridex-admin', persona: 'tenant', view, handlers: {
+  role: (el) => { pf().role = el.value; commit(); },
+  'product-new': () => editProduct({ personas: ['tenant', 'carrier'], status: 'active', tiers: [{ name: 'Standard', features: [] }] }),
+  'product-edit': (el) => editProduct(product(pf().catalog.draft, el.dataset.id)),
+  'sku-new': (el) => editSku({ id: '', type: el.dataset.arg, name: '', description: '', status: 'published', audience: ['tenant'], components: [], quantityRule: { type: 'per_module', min: 1, max: 500 }, discountBps: el.dataset.arg === 'bundle' ? 1000 : 0 }, true),
+  'sku-edit': (el) => editSku(pf().catalog.draft.skus.find((s) => s.id === el.dataset.id), false),
+  'sku-status': async (el) => {
+    if (el.dataset.arg === 'retired' && !(await confirmDialog({ title: `Retire ${el.dataset.id}?`, body: html`<p>After the next publish it disappears from the shops. Customers who already bought it keep their capacity and prices.</p>`, confirmLabel: 'Retire in draft' }))) return;
+    P.setSkuStatus(pf(), el.dataset.id, el.dataset.arg); commit();
+  },
+  price: (el) => { const m = toMinor(el.value); if (!m) { toast('Enter a price above 0 with up to two decimals, e.g. 42.00.', 'error'); app.refresh(); return; } P.setPrice(pf(), el.dataset.id, m); commit(); },
+  setting: (el) => { const b = toBps(el.value); if (b == null) { toast('Enter a percentage such as 10 or 8.25.', 'error'); app.refresh(); return; } P.setSetting(pf(), el.id, b); commit(); },
+  discard: async () => { if (await confirmDialog({ title: 'Discard all draft changes?', body: html`<p>The draft returns to the live catalog.</p>`, confirmLabel: 'Discard' })) { P.discardDraft(pf()); commit(); } },
+  publish: async () => {
+    const changes = P.draftChanges(pf()), eff = document.getElementById('eff').value;
+    const effectiveAt = eff ? new Date(eff + 'T00:00:00').toISOString() : null;
+    const ok = await openDialog({ title: effectiveAt ? 'Schedule this catalog?' : 'Publish this catalog now?', body: html`${alert('warning', 'This is a consequential commercial change.', html`<p class="small">${effectiveAt ? `Buyers see it from ${eff}.` : 'Buyers see it immediately.'} Existing orders and subscriptions are not changed.</p>`)}<ul>${changes.map((c) => html`<li>${c}</li>`)}</ul>
+        <label class="check"><input type="checkbox" name="ack"><span>I have reviewed these ${changes.length} change(s) and their effect on new purchases.</span></label>`,
+      actions: [{ label: 'Cancel', value: null }, { label: effectiveAt ? 'Schedule' : 'Publish', submit: true, kind: 'primary' }],
+      onSubmit: (fd) => { if (fd.get('ack') !== 'on') throw new Error('Tick the review confirmation to continue.'); P.publish(pf(), { effectiveAt }); } });
+    commit(); if (ok) toast(effectiveAt ? 'Catalog scheduled.' : `Catalog v${pf().catalog.version} is live in both shops.`);
+  },
+  'sched-now': () => { P.promoteScheduled(pf(), undefined, true); commit(); toast('Scheduled catalog is now live.'); },
+  'sched-cancel': () => { P.cancelScheduled(pf()); commit(); },
+  'qp-persona': (el) => { local.qp.persona = el.value; app.refresh(); },
+  'qp-demand': (el) => { local.qp.demand[el.dataset.id] = toQty(el.value) || 0; app.refresh(); },
+} });
+window.addEventListener('hashchange', () => { app.refresh(); window.scrollTo(0, 0); });
+window.addEventListener('storage', () => { S.reload(); app.refresh(); });

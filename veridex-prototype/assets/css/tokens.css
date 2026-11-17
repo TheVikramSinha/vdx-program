@@ -1,0 +1,67 @@
+/* VeriDex design tokens.
+   BASE colours are the confirmed hex values printed in Veridex_CP_02.jpg.
+   Everything marked DERIVED is calculated from a base colour and is not an additional approved brand hex. */
+:root {
+  /* Confirmed base palette */
+  --rust: #903018;        /* Primary – Rust Brown */
+  --coral: #EB854A;       /* Primary – Coral Orange */
+  --teal: #367467;        /* Secondary – Teal Green */
+  --steel: #44768C;       /* Secondary – Muted Steel Blue */
+  --ochre: #B97621;       /* Secondary – Ochre */
+  --cream: #FDF9EE;       /* Neutral – warm cream */
+  --warm-surface: #F9ECDE;/* Neutral – pale warm surface */
+  --warm-grey: #E4DCD3;   /* Neutral – warm grey */
+  --grey: #A4A7AB;        /* Neutral – grey */
+
+  /* DERIVED tints (80/60/40/20% of base over white, as the palette sheet shows) */
+  --rust-80: color-mix(in srgb, var(--rust) 80%, white);
+  --rust-20: color-mix(in srgb, var(--rust) 20%, white);
+  --rust-10: color-mix(in srgb, var(--rust) 10%, white);
+  --coral-60: color-mix(in srgb, var(--coral) 60%, white);
+  --coral-20: color-mix(in srgb, var(--coral) 20%, white);
+  --teal-80: color-mix(in srgb, var(--teal) 80%, white);
+  --teal-40: color-mix(in srgb, var(--teal) 40%, white);
+  --teal-20: color-mix(in srgb, var(--teal) 20%, white);
+  --steel-40: color-mix(in srgb, var(--steel) 40%, white);
+  --steel-20: color-mix(in srgb, var(--steel) 20%, white);
+  --ochre-40: color-mix(in srgb, var(--ochre) 40%, white);
+  --ochre-20: color-mix(in srgb, var(--ochre) 20%, white);
+
+  /* DERIVED shades for accessible text on light surfaces */
+  --rust-dark: #6F2412;   /* rust darkened – hover/pressed */
+  --teal-dark: #285A50;
+  --steel-dark: #33596A;
+  --ochre-dark: #7A4D12;  /* ochre darkened so warning text passes AA */
+
+  /* Supporting neutrals for readability (not brand colours) */
+  --white: #FFFFFF;
+  --ink: #2A1A12;         /* body text */
+  --ink-2: #5A4A40;       /* secondary text */
+  --border: var(--warm-grey);
+  --border-strong: #8C8078; /* DERIVED: input borders at ≥3:1 on white */
+
+  /* Semantic roles */
+  --bg: var(--cream);
+  --surface: var(--white);
+  --surface-2: var(--warm-surface);
+  --primary: var(--rust);
+  --primary-hover: var(--rust-dark);
+  --on-primary: var(--white);
+  --accent: var(--coral);
+  --success: var(--teal); --success-bg: var(--teal-20); --success-text: var(--teal-dark);
+  --info: var(--steel); --info-bg: var(--steel-20); --info-text: var(--steel-dark);
+  --warning: var(--ochre); --warning-bg: var(--ochre-20); --warning-text: var(--ochre-dark);
+  --danger: var(--rust); --danger-bg: var(--rust-10); --danger-text: var(--rust);
+  --disabled-bg: var(--warm-grey); --disabled-text: #6E6862;
+  --focus: var(--steel);
+
+  --font: "Avenir Next", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --r-sm: 6px; --r-md: 10px; --r-lg: 14px;
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+  --shadow: 0 1px 2px rgb(42 26 18 / 6%), 0 6px 20px rgb(42 26 18 / 6%);
+  --maxw: 1240px;
+}
+[data-persona="carrier"] { --persona: var(--steel); --persona-bg: var(--steel-20); --persona-text: var(--steel-dark); }
+[data-persona="tenant"], :root { --persona: var(--teal); --persona-bg: var(--teal-20); --persona-text: var(--teal-dark); }
+[data-area="platform"] { --persona: var(--rust); --persona-bg: var(--rust-10); --persona-text: var(--rust); }

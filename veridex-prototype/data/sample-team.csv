@@ -1,0 +1,5 @@
+name,email,type,Claims,Legal,Policy,Risk Insights
+Priya Raman,priya.raman@example.test,employee,Manager,,,
+Marcus Bell,marcus.bell@example.test,employee,Contributor,Contributor,,
+Elena Soto,elena.soto@example.test,contractor,,Manager,,
+Tom Okafor,tom.okafor@example.test,employee,Viewer,,,
